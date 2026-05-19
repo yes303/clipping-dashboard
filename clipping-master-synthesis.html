@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clipping Economy — Master Synthesis</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;700&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07080d;
+    --surface: #0e0f16;
+    --surface2: #141520;
+    --border: #1e1f2e;
+    --border2: #2a2b3e;
+    --gold: #c8a84b;
+    --gold-dim: #7a6429;
+    --gold-soft: #1a1408;
+    --teal: #2ec4a0;
+    --teal-dim: #1a7060;
+    --teal-soft: #081410;
+    --amber: #e8963a;
+    --amber-soft: #1a0e04;
+    --red: #e05555;
+    --red-soft: #1a0808;
+    --green: #4ec97a;
+    --green-soft: #08160e;
+    --text: #dde0ec;
+    --muted: #5a5d78;
+    --muted2: #8085a8;
+    --tag: #181924;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+    padding: 0;
+  }
+
+  /* NAV */
+  .sticky-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(7,8,13,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.7rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .sticky-nav a {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+  .sticky-nav a:hover { color: var(--gold); background: var(--gold-soft); }
+  .nav-sep { color: var(--border2); font-size: 0.7rem; flex-shrink: 0; }
+
+  /* HERO */
+  .hero {
+    padding: 4rem 1.5rem 3rem;
+    max-width: 860px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-size: 0.9rem;
+    color: var(--muted2);
+    max-width: 580px;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .source-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .spill {
+    font-size: 0.55rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 3px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* SECTIONS */
+  .page { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
+
+  .section {
+    padding: 3rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--gold);
+    background: var(--gold-soft);
+    border: 1px solid var(--gold-dim);
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.3rem, 3.5vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* PROSE */
+  .prose {
+    font-size: 0.88rem;
+    color: var(--muted2);
+    line-height: 1.85;
+    margin-bottom: 1.2rem;
+  }
+
+  .prose strong { color: var(--text); font-weight: 600; }
+  .prose em { color: var(--gold); font-style: italic; }
+
+  /* CALLOUT */
+  .callout {
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.2rem;
+    border-left: 3px solid;
+    font-size: 0.82rem;
+    line-height: 1.8;
+  }
+  .callout-gold { background: var(--gold-soft); border-color: var(--gold); color: var(--muted2); }
+  .callout-gold strong { color: var(--gold); }
+  .callout-teal { background: var(--teal-soft); border-color: var(--teal); color: var(--muted2); }
+  .callout-teal strong { color: var(--teal); }
+  .callout-red { background: var(--red-soft); border-color: var(--red); color: var(--muted2); }
+  .callout-red strong { color: var(--red); }
+  .callout-amber { background: var(--amber-soft); border-color: var(--amber); color: var(--muted2); }
+  .callout-amber strong { color: var(--amber); }
+
+  /* GRID CARDS */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 560px) { .card-grid { grid-template-columns: 1fr; } }
+  .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 700px) { .card-grid-3 { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 460px) { .card-grid-3 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.1rem 1.2rem;
+  }
+
+  .card .card-icon { font-size: 1.3rem; margin-bottom: 0.5rem; }
+  .card .card-label {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .card h3 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    font-family: 'Barlow', sans-serif;
+  }
+  .card p {
+    font-size: 0.72rem;
+    color: var(--muted2);
+    line-height: 1.65;
+  }
+  .card .card-cost {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-size: 0.6rem;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--gold);
+    background: var(--gold-soft);
+    border: 1px solid var(--gold-dim);
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+  }
+
+  /* PRO / CON LIST */
+  .pro-con {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 560px) { .pro-con { grid-template-columns: 1fr; } }
+
+  .pro-box, .con-box {
+    border-radius: 8px;
+    padding: 1.2rem;
+  }
+  .pro-box { background: var(--green-soft); border: 1px solid #2a6040; }
+  .con-box { background: var(--red-soft); border: 1px solid #6a2a2a; }
+
+  .pro-box h3 { color: var(--green); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.8rem; font-family: 'IBM Plex Mono', monospace; }
+  .con-box h3 { color: var(--red); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.8rem; font-family: 'IBM Plex Mono', monospace; }
+
+  .check-list { list-style: none; }
+  .check-list li {
+    font-size: 0.75rem;
+    color: var(--muted2);
+    padding: 0.35rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    gap: 0.6rem;
+    line-height: 1.5;
+  }
+  .check-list li:last-child { border-bottom: none; }
+  .check-list li .icon { flex-shrink: 0; margin-top: 0.05rem; }
+  .check-list li strong { color: var(--text); }
+
+  /* PIPELINE FLOW */
+  .pipeline-flow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .pipeline-flow-header {
+    padding: 1rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pipeline-flow-header h3 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .pipeline-flow-header .badge {
+    font-size: 0.55rem;
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+  }
+
+  .badge-teal { background: var(--teal-soft); border: 1px solid var(--teal-dim); color: var(--teal); }
+  .badge-gold { background: var(--gold-soft); border: 1px solid var(--gold-dim); color: var(--gold); }
+
+  .flow-steps {
+    display: flex;
+    overflow-x: auto;
+    padding: 1.4rem;
+    gap: 0;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+  }
+
+  .flow-box {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    min-width: 110px;
+    text-align: center;
+  }
+
+  .flow-box .flow-icon { font-size: 1.2rem; margin-bottom: 0.3rem; }
+  .flow-box .flow-name {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+    font-family: 'Barlow', sans-serif;
+  }
+  .flow-box .flow-desc {
+    font-size: 0.58rem;
+    color: var(--muted);
+    line-height: 1.4;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .flow-arrow {
+    font-size: 1.2rem;
+    color: var(--gold);
+    padding: 0 0.5rem;
+    flex-shrink: 0;
+  }
+
+  /* INCOME TABLE */
+  .income-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.76rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .income-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    padding: 0.6rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .income-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted2);
+    vertical-align: top;
+  }
+
+  .income-table tr:last-child td { border-bottom: none; }
+  .income-table td:first-child { font-weight: 600; color: var(--text); }
+  .income-table .hi { color: var(--green); font-weight: 700; }
+  .income-table .med { color: var(--amber); font-weight: 700; }
+  .income-table .lo { color: var(--red); font-weight: 600; }
+
+  /* PHASE ROADMAP */
+  .phase-block {
+    border-radius: 10px;
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+    border: 1px solid;
+  }
+
+  .phase-teal { background: var(--teal-soft); border-color: var(--teal-dim); }
+  .phase-gold { background: var(--gold-soft); border-color: var(--gold-dim); }
+  .phase-amber { background: var(--amber-soft); border-color: #6a4010; }
+
+  .phase-block .phase-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5rem;
+  }
+  .phase-teal .phase-tag { color: var(--teal); }
+  .phase-gold .phase-tag { color: var(--gold); }
+  .phase-amber .phase-tag { color: var(--amber); }
+
+  .phase-block h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .phase-block p {
+    font-size: 0.76rem;
+    color: var(--muted2);
+    line-height: 1.7;
+    margin-bottom: 0.6rem;
+  }
+
+  .phase-block .phase-income {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+  .phase-teal .phase-income { color: var(--teal); }
+  .phase-gold .phase-income { color: var(--gold); }
+  .phase-amber .phase-income { color: var(--amber); }
+
+  /* SOVEREIGN BOX */
+  .sovereign-box {
+    background: linear-gradient(135deg, #140e04, #0a0d14);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .sovereign-box .sov-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+
+  .sovereign-box h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+    font-style: italic;
+  }
+
+  .sovereign-box p {
+    font-size: 0.8rem;
+    color: var(--muted2);
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.85;
+  }
+
+  .sovereign-box p strong { color: var(--text); }
+
+  /* STAT ROW */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 600px) { .stat-row { grid-template-columns: 1fr 1fr; } }
+
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .stat-box .stat-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .stat-box .stat-lbl {
+    font-size: 0.58rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-family: 'IBM Plex Mono', monospace;
+    line-height: 1.4;
+  }
+
+  /* MISSION ALIGNMENT */
+  .align-strip {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .align-strip .align-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .align-strip .align-text h4 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+  .align-strip .align-text p {
+    font-size: 0.72rem;
+    color: var(--muted2);
+    line-height: 1.6;
+  }
+
+  /* DIVIDER */
+  hr.div { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  /* PLATFORM COMPARE */
+  .platform-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+  @media (max-width: 600px) { .platform-row { grid-template-columns: 1fr 1fr; } }
+
+  .platform-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.8rem;
+    text-align: center;
+  }
+
+  .platform-card .p-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+  .platform-card .p-cpm {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--teal);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .platform-card .p-note {
+    font-size: 0.58rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* WARNING */
+  .warning-strip {
+    background: var(--red-soft);
+    border: 1px solid #5a2020;
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    font-size: 0.72rem;
+    color: var(--muted2);
+    margin-bottom: 0.8rem;
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    line-height: 1.6;
+  }
+  .warning-strip strong { color: var(--red); }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="sticky-nav">
+  <a href="#market">Market</a>
+  <span class="nav-sep">·</span>
+  <a href="#why-pd">Why PD First</a>
+  <span class="nav-sep">·</span>
+  <a href="#pros-cons">Pros / Cons</a>
+  <span class="nav-sep">·</span>
+  <a href="#money">How Money Works</a>
+  <span class="nav-sep">·</span>
+  <a href="#tools">Tools</a>
+  <span class="nav-sep">·</span>
+  <a href="#automation">Automation</a>
+  <span class="nav-sep">·</span>
+  <a href="#risks">Risks</a>
+  <span class="nav-sep">·</span>
+  <a href="#roadmap">Roadmap</a>
+  <span class="nav-sep">·</span>
+  <a href="#mission">Mission Fit</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">Builders Field Intelligence · Full Thread Synthesis · May 2026</p>
+  <h1>The Clipping Economy<br><em>Master Field Map</em></h1>
+  <p class="hero-sub">Everything gathered across this research thread — market data, tools, automations, income models, risks, and your three-phase sovereign strategy — synthesized into one reference document.</p>
+  <div class="source-pills">
+    <span class="spill">Vadim/X Thread</span>
+    <span class="spill">Postiz Blog</span>
+    <span class="spill">SendShort Guide</span>
+    <span class="spill">Substack Analysis</span>
+    <span class="spill">NPR Morning Edition</span>
+    <span class="spill">Whop Official Blog</span>
+    <span class="spill">OpusClip Research</span>
+    <span class="spill">Medium / No-Time</span>
+    <span class="spill">Clipping.net Data</span>
+    <span class="spill">Vyro Platform</span>
+    <span class="spill">AI/X Research Doc</span>
+    <span class="spill">Whop Agency Transcript</span>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- 01 MARKET -->
+<section class="section" id="market">
+  <div class="section-head">
+    <span class="section-num">01</span>
+    <h2>What the Market Is Actually Doing</h2>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <span class="stat-val">$3 CPM</span>
+      <span class="stat-lbl">Vyro top payout rate — 6× YouTube baseline</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-val">3.5B</span>
+      <span class="stat-lbl">Clipped views/month through Whop alone</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-val">62K</span>
+      <span class="stat-lbl">Clippers on Clipping.net, avg $3K/mo</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-val">12–18mo</span>
+      <span class="stat-lbl">Estimated optimal entry window remaining</span>
+    </div>
+  </div>
+
+  <div class="prose">
+    When NPR covers something, the window is real — but it's also starting to close. The clipping economy is a <strong>genuine, active gold rush</strong> happening right now in mid-2026. It is not hype manufactured by course sellers. Bloomberg covered MrBeast's clipper army. NPR ran a Morning Edition segment. The Verge investigated campaign transparency issues. This is a real, documented economic phenomenon.
+  </div>
+
+  <div class="callout callout-gold">
+    <strong>The paradigm shift (NPR/Ed Elson):</strong> Clips are no longer promotional material for longer content. The clip IS the content. The full podcast, stream, or video exists to generate the clip. For platforms like TikTok, Instagram, and YouTube Shorts, the clip is the unit of culture. This changes everything about how you think about what you're building.
+  </div>
+
+  <div class="prose">
+    Real earnings documented: A 25-year-old Belgian went from Subway sandwiches to running 40,000 freelance clippers. A 14-year-old in Ohio turned a $200 laptop into $10K in two months. A 19-year-old in Chicago makes $4K/month clipping for tech founders. One full-time clipper running 22 campaigns simultaneously hit $47K from a single campaign in October 2025. These are not outliers — they are early movers who showed up consistently.
+  </div>
+
+  <div class="callout callout-teal">
+    <strong>The Druski case study (from agency transcript):</strong> 3,200 clips posted, 120 million views, in under 2 weeks — for only $10,000 total. He capped per-clip payouts at $350 max, so his effective CPM was $0.09 even though the nominal rate was $0.35/1K. The math works because viral clips generate views far beyond what creators pay for.
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- 02 WHY PD FIRST -->
+<section class="section" id="why-pd">
+  <div class="section-head">
+    <span class="section-num">02</span>
+    <h2>Why PD Clipper First — The Strategic Logic</h2>
+  </div>
+
+  <div class="prose">
+    The decision to start with PD clipping before Koala Oracle is <strong>exactly right</strong> for three compounding reasons. This isn't compromise — it's sovereign sequencing.
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <div class="card-label">Reason 1</div>
+      <h3>Content Already Exists</h3>
+      <p>Hormozi, Goggins, Bartlett, Jay Shetty, Diary of a CEO — thousands of hours of high-quality long-form content sitting on YouTube right now, ready to clip. Zero production time required. Koala Oracle requires you to generate all content first with Kling — that's a real time investment before you can even begin posting.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏫</div>
+      <div class="card-label">Reason 2</div>
+      <h3>It's the Training Ground</h3>
+      <p>PD clipping teaches you the actual machine — what hooks land, which platforms convert, what posting cadence works, how the automation stack behaves. By the time Oracle is ready to publish, you're not starting from zero. You're redirecting a stack you've already tested, tuned, and proven.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💰</div>
+      <div class="card-label">Reason 3</div>
+      <h3>Cashflow Funds Oracle</h3>
+      <p>Kling 3.0 Pro, ElevenLabs, production time — Oracle has real costs. PD clipping generates cashflow that funds the Oracle build. Month 1–2 PD income becomes Month 3 Oracle production budget. The machine funds itself.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧭</div>
+      <div class="card-label">Reason 4</div>
+      <h3>Mission Aligned</h3>
+      <p>Personal development IS your world. Hormozi on leverage, Goggins on discipline, Jay Shetty on inner work — this content lives in the same frequency field as AbundanceBridge and The Momentum Method. You're not doing something foreign. You're distributing content adjacent to your life's work.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- 03 PROS CONS -->
+<section class="section" id="pros-cons">
+  <div class="section-head">
+    <span class="section-num">03</span>
+    <h2>Honest Pros &amp; Cons</h2>
+  </div>
+
+  <div class="pro-con">
+    <div class="pro-box">
+      <h3>✓ Pros</h3>
+      <ul class="check-list">
+        <li><span class="icon">✓</span><div><strong>No audience required.</strong> Vyro and Whop pay based purely on clip performance, not follower count. Zero to $1K is possible in weeks.</div></li>
+        <li><span class="icon">✓</span><div><strong>No content creation.</strong> You clip existing videos. The creative work is done by the podcasters and creators you're clipping.</div></li>
+        <li><span class="icon">✓</span><div><strong>AI does the heavy lifting.</strong> OpusClip turns a 2-hour podcast into 30+ clips in 12 minutes. The bottleneck used to be editing. It's now distribution.</div></li>
+        <li><span class="icon">✓</span><div><strong>Scalable to volume.</strong> With automation, 60–160 posts/day is achievable. Person B posts 800 clips in the time Person A posts 20.</div></li>
+        <li><span class="icon">✓</span><div><strong>Multiple income streams simultaneously.</strong> Vyro + Whop CPM + affiliate bio links + platform creator funds. Stack all of them.</div></li>
+        <li><span class="icon">✓</span><div><strong>Low startup cost.</strong> OpusClip $29/mo + Postiz $19/mo + free Vyro/Whop accounts. Under $60/mo to run the full stack.</div></li>
+        <li><span class="icon">✓</span><div><strong>Facebook Reels sleeper CPM.</strong> Most guides skip Facebook. CPMs up to $4 — higher than TikTok or YouTube Shorts. Add it to your stack.</div></li>
+        <li><span class="icon">✓</span><div><strong>Directly transfers to Oracle.</strong> Same tools, same automation, same scheduler. Just redirect to your own IP when ready.</div></li>
+      </ul>
+    </div>
+    <div class="con-box">
+      <h3>✗ Cons &amp; Honest Cautions</h3>
+      <ul class="check-list">
+        <li><span class="icon">✗</span><div><strong>High variance.</strong> One clip might hit 2M views. The next 39 might do 500 each. Volume is the only reliable strategy — you can't pick winners reliably.</div></li>
+        <li><span class="icon">✗</span><div><strong>Platform risk.</strong> Algorithms can suppress repetitive or spammy-looking content. Account warm-up protocol is non-negotiable. Don't rush.</div></li>
+        <li><span class="icon">✗</span><div><strong>Copyright grey zone.</strong> Fair use is not guaranteed. Campaigns you join (Whop/Vyro) give you permission to clip that creator's content — but clipping without campaign authorization carries risk.</div></li>
+        <li><span class="icon">✗</span><div><strong>Window is compressing.</strong> The "12–18 month" window sentiment is common across all sources. Payouts will compress as saturation increases. Early movers win.</div></li>
+        <li><span class="icon">✗</span><div><strong>Taste still matters.</strong> AI picks moments — but niche selection, hook style, and content instincts still determine who hits $10K vs $400/month.</div></li>
+        <li><span class="icon">✗</span><div><strong>Some campaigns are scammy.</strong> Vet every campaign. Sort by "most paid out." Avoid waitlist campaigns. Only enter at $2+ CPM. Check budget % remaining (60%+ rule).</div></li>
+        <li><span class="icon">✗</span><div><strong>Not passive income — yet.</strong> Early weeks require real attention. Setting up accounts, testing content, reading analytics. Automation comes after you know what works.</div></li>
+        <li><span class="icon">✗</span><div><strong>Building someone else's brand.</strong> You're growing Hormozi's reach, not yours. This is intentional for Phase 1 — but it's why Oracle is the long game.</div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- 04 HOW MONEY WORKS -->
+<section class="section" id="money">
+  <div class="section-head">
+    <span class="section-num">04</span>
+    <h2>How the Money Actually Works</h2>
+  </div>
+
+  <div class="prose">
+    Three parallel income layers. Run all three simultaneously from day one.
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">💎</div>
+      <div class="card-label">Layer 1 — Primary</div>
+      <h3>Whop Content Rewards</h3>
+      <p>Find active PD campaigns. Clip creator content. Submit clip URL within 24hrs. Get paid per 1,000 views. The sweet spot: $2–$3 CPM, no waitlist, under 60% budget consumed, allows 3+ platforms.</p>
+      <span class="card-cost">$2–$3 per 1K views</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏆</div>
+      <div class="card-label">Layer 2 — Premium</div>
+      <h3>Vyro</h3>
+      <p>MrBeast + Mark Rober backed. $3 per 1K views — up to 6× YouTube Shorts rate. No follower minimum. Earnings hit your wallet hourly via Stripe or PayPal. Sign up immediately — best CPM in the ecosystem.</p>
+      <span class="card-cost">$3 per 1K views · hourly payout</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔗</div>
+      <div class="card-label">Layer 3 — Upside</div>
+      <h3>Affiliate Bio Links</h3>
+      <p>PD creators have high-ticket programs. Put affiliate links in bio. One viral clip at 200K views + 5% conversion at $10 commission = $250 from a single clip on repeat. Hormozi programs, Jay Shetty courses, etc.</p>
+      <span class="card-cost">Variable — high upside per conversion</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">📺</div>
+      <div class="card-label">Layer 4 — Slow Build</div>
+      <h3>Platform Native Revenue</h3>
+      <p>Once accounts reach thresholds: TikTok Creator Fund, YouTube Shorts revenue share, Facebook Reels (up to $4 CPM — the most overlooked platform). Slower to activate but compounds over time.</p>
+      <span class="card-cost">$0.01–$4 CPM depending on platform</span>
+    </div>
+  </div>
+
+  <div class="prose" style="margin-top:0.5rem;">Platform CPM comparison — where to prioritize your distribution:</div>
+
+  <div class="platform-row">
+    <div class="platform-card">
+      <div class="p-name">Facebook Reels</div>
+      <span class="p-cpm">~$4 CPM</span>
+      <div class="p-note">Most underrated. High CPM. Most clippers skip it.</div>
+    </div>
+    <div class="platform-card">
+      <div class="p-name">Vyro</div>
+      <span class="p-cpm">$3 CPM</span>
+      <div class="p-note">Best direct payout. Hourly. No follower req.</div>
+    </div>
+    <div class="platform-card">
+      <div class="p-name">Whop</div>
+      <span class="p-cpm">$2–3 CPM</span>
+      <div class="p-note">Most campaigns. Widest selection. Vet carefully.</div>
+    </div>
+    <div class="platform-card">
+      <div class="p-name">YouTube Shorts</div>
+      <span class="p-cpm">$0.03–0.06</span>
+      <div class="p-note">Low direct pay. Value is in affiliate + brand deals.</div>
+    </div>
+  </div>
+
+  <table class="income-table">
+    <thead>
+      <tr>
+        <th>Activity Level</th>
+        <th>Clips/Day</th>
+        <th>Month 1</th>
+        <th>Month 3</th>
+        <th>Month 6</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Beginner (1–2 accounts)</td>
+        <td>3–5 clips</td>
+        <td class="med">$300–800</td>
+        <td class="med">$800–2K</td>
+        <td class="med">$1–3K</td>
+      </tr>
+      <tr>
+        <td>Active (2–4 accounts)</td>
+        <td>10–20 clips</td>
+        <td class="med">$800–2K</td>
+        <td class="hi">$2–5K</td>
+        <td class="hi">$5–10K</td>
+      </tr>
+      <tr>
+        <td>Scaled (6+ accounts, agent)</td>
+        <td>40–60 clips</td>
+        <td class="hi">$2–4K</td>
+        <td class="hi">$5–15K</td>
+        <td class="hi">$10–25K+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="warning-strip">
+    <span>⚠</span>
+    <span><strong>Campaign selection rules (non-negotiable):</strong> Sort by "most paid out" not default view. Only join if budget is 60% or more remaining. Skip waitlist campaigns. Never enter below $2 CPM. Multi-platform = more chances to go viral.</span>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- 05 TOOLS -->
+<section class="section" id="tools">
+  <div class="section-head">
+    <span class="section-num">05</span>
+    <h2>The Full Tool Stack</h2>
+  </div>
+
+  <div class="prose">
+    Six tools. That's the complete PD Clipper stack. Every one of these transfers directly to Koala Oracle — you're building the machine once.
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">✂️</div>
+      <div class="card-label">Core Engine · Required</div>
+      <h3>OpusClip</h3>
+      <p>Drop a YouTube URL. AI analyzes speech, tone, emotion, content density. Extracts 30+ vertical clips with captions baked in, ranked by virality score. A 2-hour podcast becomes clip-ready content in 12 minutes. The undisputed workhorse. Pair with CapCut for manual hook overlays on your top 10.</p>
+      <span class="card-cost">$29/mo Creator plan</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">✏️</div>
+      <div class="card-label">Hook Layer · Free</div>
+      <h3>CapCut</h3>
+      <p>Mobile. Free. Run your top clips through it. Add a 3-second text hook at the start. This is the one manual touch that meaningfully lifts retention. Takes 2 minutes per clip. Also handles platform-specific formatting and native trending audio — always finish on the native app editor.</p>
+      <span class="card-cost">Free</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">📅</div>
+      <div class="card-label">Scheduling HQ · Required</div>
+      <h3>Postiz</h3>
+      <p>Your central command for all posting. 25+ platforms from one dashboard. MCP server built in — plugs directly into Hermes Agent and Claude CoWork. Self-host free or ~$19/mo hosted. This becomes your permanent scheduling infrastructure for both PD and Oracle. Never change it.</p>
+      <span class="card-cost">Free self-host · ~$19/mo hosted</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚙️</div>
+      <div class="card-label">Automation Backbone · Free Tier</div>
+      <h3>Make.com</h3>
+      <p>The invisible glue. Wires OpusClip output → Google Drive → Postiz automatically. Set it once. Clips flow from extraction to scheduled posting without you touching anything. Free tier available for starting volume. Upgrade as you scale.</p>
+      <span class="card-cost">Free tier · scales with volume</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">🤖</div>
+      <div class="card-label">Agent Brain · Free OSS</div>
+      <h3>Hermes Agent</h3>
+      <p>Open source. MIT licensed. 57K GitHub stars. One Telegram message fires the entire pipeline — Hermes calls OpusClip/Vugola, polls until clips are ready, downloads them, hands to Postiz, schedules across every platform. You get a ping when it's done. Usually 15–25 min for the full flow.</p>
+      <span class="card-cost">Free · open source</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">☁️</div>
+      <div class="card-label">Buffer Storage · Free</div>
+      <h3>Google Drive</h3>
+      <p>Stores your clip bank between extraction and posting. Keeps Make.com automations clean. Goal: bank 50–70 clips per creator before you start posting at volume. This buffer means you're never scrambling for content.</p>
+      <span class="card-cost">Free (15GB) · $3/mo for more</span>
+    </div>
+  </div>
+
+  <div class="callout callout-amber">
+    <strong>Alternative clipping tools worth knowing:</strong> SendShort (browser-based, no install, free tier — good OpusClip backup), Vugola (API-native, designed specifically for agentic pipelines), Clippie AI (batch automation focus). All do roughly the same thing. OpusClip has the best virality scoring and active speaker detection. Start there.
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- 06 AUTOMATION -->
+<section class="section" id="automation">
+  <div class="section-head">
+    <span class="section-num">06</span>
+    <h2>The Automation Stack — How It Runs</h2>
+  </div>
+
+  <div class="prose">
+    Person A edits manually, posts to 5 apps by hand, publishes 20 clips in a week. Person B uses the agent stack and publishes 800. Same niche, same content, completely different outcome. The Postiz piece is the key insight from the research — <strong>distribution, not clipping, is where the leaderboard gets decided.</strong>
+  </div>
+
+  <div class="pipeline-flow">
+    <div class="pipeline-flow-header">
+      <h3>🧠 PD Clipper — Automated Pipeline Flow</h3>
+      <span class="badge badge-teal">Target: 40–60 posts/day</span>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-box">
+          <div class="flow-icon">📱</div>
+          <div class="flow-name">Telegram</div>
+          <div class="flow-desc">One message to Hermes fires everything</div>
+        </div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-box">
+          <div class="flow-icon">✂️</div>
+          <div class="flow-name">OpusClip</div>
+          <div class="flow-desc">YouTube URL in → 30+ clips out in 12 min</div>
+        </div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-box">
+          <div class="flow-icon">☁️</div>
+          <div class="flow-name">Google Drive</div>
+          <div class="flow-desc">Clip bank buffer — 50–70 clips per creator</div>
+        </div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-box">
+          <div class="flow-icon">⚙️</div>
+          <div class="flow-name">Make.com</div>
+          <div class="flow-desc">Auto-routes clips to Postiz queue</div>
+        </div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-box">
+          <div class="flow-icon">📅</div>
+          <div class="flow-name">Postiz</div>
+          <div class="flow-desc">Schedules across TikTok, Reels, Shorts, X, Facebook</div>
+        </div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-box">
+          <div class="flow-icon">💰</div>
+          <div class="flow-name">Payouts</div>
+          <div class="flow-desc">Vyro + Whop + affiliate links firing simultaneously</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-teal">
+    <strong>The agent loop (Postiz + Hermes):</strong> Agent receives clip folder → generates platform-specific captions (short punchy for TikTok, longer for YouTube, aesthetic copy for Instagram) → uploads media to get a Postiz-trusted URL (required — TikTok and Instagram don't accept external links) → schedules one clip across every allowed platform at staggered times → 24hrs later pulls analytics and adjusts the next batch. This runs without you touching anything.
+  </div>
+
+  <div class="prose">
+    <strong>Week 1 exception:</strong> Do not fully automate in Week 1. Post 3 clips/day manually. Watch what lands — which hook style, which creator, which platform, which time. Automate what works. This is how you train the machine on real signal before you scale volume.
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- 07 RISKS -->
+<section class="section" id="risks">
+  <div class="section-head">
+    <span class="section-num">07</span>
+    <h2>Real Risks — Eyes Open</h2>
+  </div>
+
+  <div class="warning-strip">
+    <span>⚠</span>
+    <span><strong>Platform shadowbanning:</strong> Algorithms punish spam. Accounts that mass-post identical clips across multiple accounts without warming up first get suppressed. Warm up every new account with 3–5 organic posts before mass scheduling.</span>
+  </div>
+  <div class="warning-strip">
+    <span>⚠</span>
+    <span><strong>Campaign fraud:</strong> Some campaigns are scammy. Some clippers bot their views — and Whop's anti-bot detection doesn't catch 100% of it. Stick to campaigns from verifiable creators. Check "most paid out" sort to confirm payment history.</span>
+  </div>
+  <div class="warning-strip">
+    <span>⚠</span>
+    <span><strong>Copyright risk:</strong> Clipping without authorization is grey-area fair use. Always clip within official Whop/Vyro campaign guidelines where the creator has explicitly authorized it. Adding captions, overlays, or trending audio also helps fair use claims.</span>
+  </div>
+  <div class="warning-strip">
+    <span>⚠</span>
+    <span><strong>Budget timing:</strong> Campaigns drain. If a campaign is 90%+ consumed, you risk posting great content and earning nothing. Only enter at 60% or more remaining budget. Fast clippers who post within 24hrs of campaign launch get the most payout runway.</span>
+  </div>
+  <div class="warning-strip">
+    <span>⚠</span>
+    <span><strong>Saturation is real and rising:</strong> The NPR article signals mainstream awareness. The "12–18 month window" estimate is the consensus across all sources. Early movers win. Waiters compete against a much larger field for compressed payouts.</span>
+  </div>
+  <div class="warning-strip">
+    <span>⚠</span>
+    <span><strong>Platform CPM compression:</strong> Per-clip payouts may drop as more clippers flood the market. The counter-strategy is building owned audience assets (email list, subscription) alongside clip CPM — so you're not entirely dependent on marketplace rates.</span>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- 08 ROADMAP -->
+<section class="section" id="roadmap">
+  <div class="section-head">
+    <span class="section-num">08</span>
+    <h2>Three-Phase Sovereign Roadmap</h2>
+  </div>
+
+  <div class="phase-block phase-teal">
+    <div class="phase-tag">Phase 1 · Now → Month 2</div>
+    <h3>🧠 PD Clipper — Learn the Machine</h3>
+    <p>Pick 2–3 PD creators (Hormozi, Goggins, Jay Shetty are ideal). Create dedicated fan pages. Join Vyro and Whop Content Rewards immediately — both free. Start OpusClip at $29/mo. Post 3 clips/day manually for Week 1 to read signal. By Week 2 start automating what's working. Build toward 6 accounts × 5 clips × 4 platforms = 120 posts/day. Simultaneously: build out Koala Oracle character design, voice work, brand architecture.</p>
+    <div class="phase-income">Target: $500–3K/mo by end of Month 2</div>
+  </div>
+
+  <div class="phase-block phase-gold">
+    <div class="phase-tag">Phase 2 · Month 2–4</div>
+    <h3>🐨 Koala Oracle — Redirect the Machine</h3>
+    <p>Oracle content is ready. Redirect the exact same Postiz/Make.com/Hermes stack to Oracle accounts. Add Kling 3.0 Pro for content generation and ElevenLabs for character voices — these are the only two new tools. Oracle fan pages replace PD fan pages. Vyro continues for original AI content CPM. Whop CPM gets supplemented by Oracle email list growth → future subscription model. Both pipelines can run in parallel.</p>
+    <div class="phase-income">Target: $2–8K/mo by end of Month 4 (combined PD + Oracle)</div>
+  </div>
+
+  <div class="phase-block phase-amber">
+    <div class="phase-tag">Phase 3 · Month 5+</div>
+    <h3>🏛️ Clipping Agency — Manage for Others</h3>
+    <p>You've proven the stack. You know the campaigns, the tools, the platform dynamics. Now partner with PD creators and manage their entire clipping operation. Recruit 10–20 vetted clippers into a private community. Take a monthly retainer (~$3K) plus 10–20% of campaign budget. On a $50K campaign = up to $10K for managing. This is the highest leverage model — your job is signing creators and posting campaign announcements. Clippers do all the work.</p>
+    <div class="phase-income">Target: $5–20K+/mo by Month 6 (agency + Oracle)</div>
+  </div>
+
+  <div class="callout callout-gold" style="margin-top:1.2rem;">
+    <strong>The sovereign sequence:</strong> PD clipping teaches the machine and funds the operation. Oracle builds the brand and own IP. Agency monetizes the expertise. Each phase funds and informs the next. You're not starting three separate businesses — you're building one sovereign distribution infrastructure and pointing it at different targets in sequence.
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- 09 MISSION FIT -->
+<section class="section" id="mission">
+  <div class="section-head">
+    <span class="section-num">09</span>
+    <h2>Mission Alignment — Why This Fits</h2>
+  </div>
+
+  <div class="align-strip">
+    <div class="align-icon">💸</div>
+    <div class="align-text">
+      <h4>Cashflow Lever</h4>
+      <p>Increasing cashflow is your #1 stated lever. PD clipping is one of the fastest, lowest-overhead paths to new cashflow available in 2026. Sub-$60/mo to operate. No inventory, no clients, no calls. Pure leverage on content that already exists.</p>
+    </div>
+  </div>
+
+  <div class="align-strip">
+    <div class="align-icon">🛡️</div>
+    <div class="align-text">
+      <h4>Sovereign AI Mesh</h4>
+      <p>Hermes Agent + Postiz MCP + Make.com automation — this IS the Sovereign AI Mesh in action. You're building an agentic infrastructure that operates while you sleep. One Telegram message runs the entire pipeline. This is the embodied version of the architecture you've been building toward.</p>
+    </div>
+  </div>
+
+  <div class="align-strip">
+    <div class="align-icon">🌱</div>
+    <div class="align-text">
+      <h4>PD Content = Adjacent Mission</h4>
+      <p>The content you'll be clipping — Hormozi on leverage, Goggins on discipline, Jay Shetty on inner work, Diary of a CEO on sovereignty — lives in the same frequency field as AbundanceBridge and The Momentum Method. You're distributing content you already believe in.</p>
+    </div>
+  </div>
+
+  <div class="align-strip">
+    <div class="align-icon">🔮</div>
+    <div class="align-text">
+      <h4>Koala Oracle — Own IP, Sovereign Audience</h4>
+      <p>The NPR/Substack critiques of clip farming (disposable, strips original creators of monetization, doesn't deliver real value) do NOT apply to Oracle. Original AI-generated IP with a coherent mythology, owned audience, and subscription model is the sovereign answer to everything the critics are pointing at. This is the other side of the clipping economy that hasn't been built yet.</p>
+    </div>
+  </div>
+
+  <div class="align-strip">
+    <div class="align-icon">🌍</div>
+    <div class="align-text">
+      <h4>Fourth Turning / New Earth Positioning</h4>
+      <p>The AI era is eating repetitive creative tasks. Clipping is the first visible gold rush — but the principle extends to every domain. Building your sovereign AI mesh now, during the window, positions you ahead of the curve for what comes next. This is preparation in action, not reactive scrambling.</p>
+    </div>
+  </div>
+</section>
+
+</div><!-- end .page -->
+
+<!-- SOVEREIGN CLOSE -->
+<div class="page">
+  <div class="sovereign-box">
+    <div class="sov-icon">🌊</div>
+    <h2>Ride the Wave. Build the Field.</h2>
+    <p>The clipping economy is the wave. PD clipping is how you learn to surf. Koala Oracle is how you own the beach. The agency is how you teach others to surf and take a percentage. <br><br><strong>Right next step: Sign up for Vyro and Whop today. Both free. Then grab OpusClip and drop one Hormozi video in. When you see 30 clips generate in 12 minutes, the whole thing becomes real.</strong><br><br>Everything is already alive in your purpose. This is just the cashflow infrastructure that makes it sustainable.</p>
+  </div>
+  <div style="height: 3rem;"></div>
+</div>
+
+</body>
+</html>
